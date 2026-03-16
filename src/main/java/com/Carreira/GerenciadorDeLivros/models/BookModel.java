@@ -1,4 +1,4 @@
-package com.Carreira.GerenciadorDeLivros.Models;
+package com.Carreira.GerenciadorDeLivros.models;
 
 import jakarta.persistence.*;
 
