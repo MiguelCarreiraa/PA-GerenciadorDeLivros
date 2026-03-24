@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
-@Service
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+@RestController
 @RequestMapping(path = "/books")
 public class BookController {
 
@@ -18,19 +22,49 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping
-    public ResponseEntity<List<BookModel>> findAll(){
-        List<BookModel> requeste = bookService.findAll();
-        return  ResponseEntity.ok().body(requeste);
+    public ResponseEntity<List<BookModel>> findAllBook(){
+        return ResponseEntity.ok(bookService.findAll());
     }
 
     @PostMapping
     public ResponseEntity<BookModel> criarBook(@RequestBody BookModel bookModel){
-        return ResponseEntity.status(204).body(bookModel);
+        BookModel novo = bookService.criarBook(bookModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookModel> buscarPorIdBook(@PathVariable Long id){
+        Optional<BookModel> book = bookService.buscarPorId(id);
+
+        if (book.isPresent()) {
+            return ResponseEntity.ok(book.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookModel> atualizarBook(@PathVariable Long id,
+                                               @RequestBody BookModel bookModel){
+        Optional<BookModel> existente = bookService.buscarPorId(id);
+
+        if (existente.isPresent()) {
+            BookModel atualizado = bookService.atualizar(id, bookModel);
+            return ResponseEntity.ok(atualizado);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarBook (@PathVariable Long id){
-        bookService.deletar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deletarBook (@PathVariable Long id){
+        Optional<BookModel> existente = bookService.buscarPorId(id);
+
+        if (existente.isPresent()) {
+            bookService.deletar(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
