@@ -14,6 +14,9 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 @RestController
 @RequestMapping(path = "/books")
 public class BookController {
@@ -44,7 +47,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookModel> atualizarBook(@PathVariable Long id,
+    public ResponseEntity<BookModel> atualizar(@PathVariable Long id,
                                                @RequestBody BookModel bookModel){
         Optional<BookModel> existente = bookService.buscarPorId(id);
 
@@ -66,30 +69,5 @@ public class BookController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<BookModel> buscarPorId(@PathVariable Long id){
-        Optional<BookModel> book = bookService.buscarPorId(id);
-
-        if(book.isPresent()){
-            return ResponseEntity.ok(book.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<BookModel> atualizar(
-            @PathVariable Long id,
-            @RequestBody BookModel bookModel){
-
-        BookModel atualizado = bookService.atualizar(id, bookModel);
-
-        if(atualizado == null){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(atualizado);
     }
 }
